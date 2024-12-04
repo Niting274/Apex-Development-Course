@@ -1,12 +1,28 @@
+// Create an instance of AsyncOptions to set properties for Queueable jobs.
 AsyncOptions options = new AsyncOptions();
 
-options.DuplicateSignature = QueueableDuplicateSignature.Builder().addId(UserInfo.getUserId()).addString('LeadQueueable').build();
+// Build the first DuplicateSignature using the current user's ID and a string identifier.
+// This ensures the job is uniquely identifiable based on these components.
+options.DuplicateSignature = QueueableDuplicateSignature.Builder()
+    .addId(UserInfo.getUserId()) // Add current user's ID.
+    .addString('LeadQueueable')  // Add a string identifier for the job type.
+    .build();
 
-// Enqueueing for first time
+// Enqueueing the job for the first time with the defined signature.
 System.enqueueJob(new LeadQueueable(), options);
-// Enqueueing for 2nd time with same signature
-//System.enqueueJob(new LeadQueueable(), options);
 
-options.DuplicateSignature = QueueableDuplicateSignature.Builder().addId(UserInfo.getUserId()).addString('LeadQueueable').addInteger(1).build();
-// Enqueueing for 2nd time with diff signature
+// Uncommenting the next line would attempt to enqueue the same job with the same signature.
+// Since the signature is identical to the previous one, Salesforce will not enqueue it again.
+// System.enqueueJob(new LeadQueueable(), options);
+
+// Update the DuplicateSignature to include an additional integer.
+// This changes the signature, allowing the job to be enqueued again, even if the earlier one is still running.
+options.DuplicateSignature = QueueableDuplicateSignature.Builder()
+    .addId(UserInfo.getUserId()) // Same user ID.
+    .addString('LeadQueueable')  // Same string identifier.
+    .addInteger(1)              // Add an integer to make the signature unique.
+    .build();
+
+// Enqueueing the job again with the updated, unique signature.
+// Since the signature is now different, Salesforce allows the job to be enqueued.
 System.enqueueJob(new LeadQueueable(), options);
