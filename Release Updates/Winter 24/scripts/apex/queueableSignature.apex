@@ -1,28 +1,18 @@
-// Create an instance of AsyncOptions to set properties for Queueable jobs.
+//Use the QueueableDuplicateSignature class methods addId(), addInteger(), and addString() to build a unique signature for your queueable job. 
+//Use the DuplicateSignature property in the AsyncOptions class to store the queueable job signature. 
+//Enqueue your job by using the System.enqueueJob() with the AsyncOptions parameter.
+
+//This example builds the async job signature with UserId and the string MyQueueable.
+
 AsyncOptions options = new AsyncOptions();
-
-// Build the first DuplicateSignature using the current user's ID and a string identifier.
-// This ensures the job is uniquely identifiable based on these components.
 options.DuplicateSignature = QueueableDuplicateSignature.Builder()
-    .addId(UserInfo.getUserId()) // Add current user's ID.
-    .addString('LeadQueueable')  // Add a string identifier for the job type.
-    .build();
-
-// Enqueueing the job for the first time with the defined signature.
-System.enqueueJob(new LeadQueueable(), options);
-
-// Uncommenting the next line would attempt to enqueue the same job with the same signature.
-// Since the signature is identical to the previous one, Salesforce will not enqueue it again.
-// System.enqueueJob(new LeadQueueable(), options);
-
-// Update the DuplicateSignature to include an additional integer.
-// This changes the signature, allowing the job to be enqueued again, even if the earlier one is still running.
-options.DuplicateSignature = QueueableDuplicateSignature.Builder()
-    .addId(UserInfo.getUserId()) // Same user ID.
-    .addString('LeadQueueable')  // Same string identifier.
-    .addInteger(1)              // Add an integer to make the signature unique.
-    .build();
-
-// Enqueueing the job again with the updated, unique signature.
-// Since the signature is now different, Salesforce allows the job to be enqueued.
-System.enqueueJob(new LeadQueueable(), options);
+                                .addId(UserInfo.getUserId())
+                                .addString('MyQueueable')
+                                .build();
+try {
+    System.enqueueJob(new MyQueueable(), options);
+} catch (DuplicateMessageException ex) {
+    //Exception is thrown if there is already an enqueued job with the same signature
+    Assert.areEqual('Attempt to enqueue job with duplicate queueable signature',
+        ex.getMessage());
+}
