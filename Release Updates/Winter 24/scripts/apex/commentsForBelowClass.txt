@@ -1,0 +1,16 @@
+Code Breakdown and Explanation:
+AsyncOptions Class:
+
+The AsyncOptions class is used in Salesforce to define options for asynchronous execution, such as specifying a duplicate signature for Queueable jobs.
+DuplicateSignature Property:
+
+The DuplicateSignature is a unique identifier for a Queueable job. Salesforce uses this to determine if a job with the same signature is already enqueued or running. If a job with the same DuplicateSignature is found, it won't enqueue the duplicate unless the signature changes.
+QueueableDuplicateSignature.Builder():
+
+This builder is used to construct a DuplicateSignature with various components like user IDs, strings, integers, etc., allowing flexibility in how the signature is defined.
+UserInfo.getUserId():
+
+This retrieves the ID of the current user, ensuring the signature is user-specific.
+System.enqueueJob():
+
+Enqueues a Queueable job (LeadQueueable in this case) for asynchronous execution.
